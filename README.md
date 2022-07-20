@@ -1,4 +1,26 @@
-# normal run
+# Docker Commands
+
+## Rebuild the image locally
+
+```
+$ docker-compose up -d --build
+```
+
+## Run a command on a specific build
+
+```
+$ docker-compose exec <build> <command>
+```
+
+Example:
+
+```
+$ docker-compose api exec black src --check
+```
+
+# Pytest Commands
+
+## normal run
 
 $ docker-compose exec api python -m pytest "src/tests"
 
@@ -6,7 +28,7 @@ $ docker-compose exec api python -m pytest "src/tests"
 
 $ docker-compose exec api python -m pytest "src/tests" -p no:warnings
 
-# run only the last failed tests
+## run only the last failed tests
 
 $ docker-compose exec api python -m pytest "src/tests" --lf
 
@@ -14,7 +36,7 @@ $ docker-compose exec api python -m pytest "src/tests" --lf
 
 $ docker-compose exec api python -m pytest "src/tests" -k "config and not test_development_config"
 
-# stop the test session after the first failure
+## stop the test session after the first failure
 
 $ docker-compose exec api python -m pytest "src/tests" -x
 
@@ -22,7 +44,7 @@ $ docker-compose exec api python -m pytest "src/tests" -x
 
 $ docker-compose exec api python -m pytest "src/tests" -x --pdb
 
-# stop the test run after two failures
+## stop the test run after two failures
 
 $ docker-compose exec api python -m pytest "src/tests" --maxfail=2
 
@@ -30,6 +52,6 @@ $ docker-compose exec api python -m pytest "src/tests" --maxfail=2
 
 $ docker-compose exec api python -m pytest "src/tests" -l
 
-# list the 2 slowest tests
+## list the 2 slowest tests
 
 $ docker-compose exec api python -m pytest "src/tests" --durations=2
