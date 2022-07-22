@@ -18,7 +18,22 @@ pip install -r ./requirements.txt
 
 # Docker Commands
 
-## Rebuild the image locally
+## Build an image
+
+```
+$ docker-compose build
+```
+
+## Run the Production Image Locally
+
+```
+docker run --name flask-tdd -e "PORT=8765" -p 5005:8765 registry.heroku.com/obscure-lake-05982/web:latest
+
+# bring down container when done
+docker rm flask-tdd
+```
+
+## Build and run containers in detached mode
 
 ```
 $ docker-compose up -d --build
@@ -36,61 +51,61 @@ Example:
 $ docker-compose exec api black src --check
 ```
 
-# Heroku Commands
+# PostgreSQL
 
-## Publish a new build
-
-```
-docker build -f Dockerfile.prod -t registry.heroku.com/obscure-lake-05982/web .
-
-docker push registry.heroku.com/obscure-lake-05982/web:latest
-
-heroku container:release web --app obscure-lake-05982
-```
-
-## Run the Production Build Locally
+## Connect to the database via `psql`
 
 ```
-docker run --name flask-tdd -e "PORT=8765" -p 5005:8765 registry.heroku.com/obscure-lake-05982/web:latest
-
-# bring down container when done
-docker rm flask-tdd
+$ docker-compose exec api-db psql -U postgres
 ```
 
-# Pytest Commands
+# Deployment
 
-## normal run
+The following commands pertain to building the production image, pushing that image to the Heroku container registry, and then releasing the new container image to our production Heroku app
 
-$ docker-compose exec api python -m pytest "src/tests"
+## Build the production image
 
-# disable warnings
+```
+$ docker build -f Dockerfile.prod -t registry.heroku.com/obscure-lake-05982/web .
+```
 
+## Push the new image to the container registry
+
+```
+$ docker push registry.heroku.com/obscure-lake-05982/web:latest
+```
+
+## Release the new image to production Heroku app
+
+```
+$ heroku container:release web --app obscure-lake-05982
+```
+
+# App-Specific Commands
+
+These commands pertain specifically to how this application was set up.
+
+## Run tests
+
+```
 $ docker-compose exec api python -m pytest "src/tests" -p no:warnings
+```
 
-## run only the last failed tests
+## Run tests with coverage
 
-$ docker-compose exec api python -m pytest "src/tests" --lf
+```
+$ docker-compose exec api python -m pytest "src/tests" -p no:warnings --cov="src"
+```
 
-# run only the tests with names that match the string expression
+## Lint
 
-$ docker-compose exec api python -m pytest "src/tests" -k "config and not test_development_config"
+```
+$ docker-compose exec api flake8 src
+```
 
-## stop the test session after the first failure
+## Code quality & formatting
 
-$ docker-compose exec api python -m pytest "src/tests" -x
-
-# enter PDB after first failure then end the test session
-
-$ docker-compose exec api python -m pytest "src/tests" -x --pdb
-
-## stop the test run after two failures
-
-$ docker-compose exec api python -m pytest "src/tests" --maxfail=2
-
-# show local variables in tracebacks
-
-$ docker-compose exec api python -m pytest "src/tests" -l
-
-## list the 2 slowest tests
-
-$ docker-compose exec api python -m pytest "src/tests" --durations=2
+```
+$ docker-compose exec api black src
+$ docker-compose exec api isort src
+```
