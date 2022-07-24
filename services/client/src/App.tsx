@@ -1,8 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+
+import { User } from "./types";
+import { About } from "./components/About";
 import { AddUser } from "./components/AddUser";
 import { UsersList } from "./components/UsersList";
-import { User } from "./types";
 
 function App() {
   const [users, setUsers] = useState<User[]>([]);
@@ -66,18 +69,28 @@ function App() {
         <div className="columns">
           <div className="column is-half">
             <br />
-            <h1 className="title is-1">Users</h1>
-            <hr />
-            <br />
-            <AddUser
-              username={username}
-              email={email}
-              addUser={addUser}
-              handleChange={handleChange}
-            />
-            <br />
-            <br />
-            <UsersList users={users} />
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <div>
+                    <h1 className="title is-1">Users</h1>
+                    <hr />
+                    <br />
+                    <AddUser
+                      username={username}
+                      email={email}
+                      addUser={addUser}
+                      handleChange={handleChange}
+                    />
+                    <br />
+                    <br />
+                    <UsersList users={users} />
+                  </div>
+                }
+              />
+              <Route path="/about" element={<About />} />
+            </Routes>
           </div>
         </div>
       </div>
