@@ -1,16 +1,24 @@
 /* eslint-disable testing-library/prefer-screen-queries */
-import { render, cleanup } from "@testing-library/react";
-
-import { AddUser } from "../AddUser";
+import { cleanup } from "@testing-library/react";
+import { renderWithRouter } from "../../testUtils";
+import { RegisterForm } from "../RegisterForm";
 
 afterEach(cleanup);
 
 const props = {
-  addUser: () => undefined,
+  isAuthenticated: () => false,
+  handleRegisterFormSubmit: () => true,
 };
 
+it("renders properly", () => {
+  const { getByText } = renderWithRouter(<RegisterForm {...props} />);
+  expect(getByText("Register")).toHaveClass("title");
+});
+
 it("renders with default props", () => {
-  const { getByLabelText, getByText } = render(<AddUser {...props} />);
+  const { getByLabelText, getByText } = renderWithRouter(
+    <RegisterForm {...props} />
+  );
 
   const usernameInput = getByLabelText("Username");
   expect(usernameInput).toHaveAttribute("type", "text");
@@ -29,6 +37,6 @@ it("renders with default props", () => {
 });
 
 it("renders", () => {
-  const { asFragment } = render(<AddUser {...props} />);
+  const { asFragment } = renderWithRouter(<RegisterForm {...props} />);
   expect(asFragment()).toMatchSnapshot();
 });

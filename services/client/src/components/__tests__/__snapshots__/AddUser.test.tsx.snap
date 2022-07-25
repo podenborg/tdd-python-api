@@ -41,6 +41,25 @@ exports[`renders 1`] = `
         value=""
       />
     </div>
+    <div
+      class="field"
+    >
+      <label
+        class="label is-large"
+        for="input-password"
+      >
+        Password
+      </label>
+      <input
+        class="input is-large"
+        id="input-password"
+        name="password"
+        placeholder="Enter a password"
+        required=""
+        type="password"
+        value=""
+      />
+    </div>
     <input
       class="button is-primary is-large is-fullwidth"
       type="submit"
