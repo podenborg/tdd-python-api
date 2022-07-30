@@ -7,7 +7,7 @@ import { renderWithRouter } from "../../testUtils";
 afterEach(cleanup);
 
 const props = {
-  title = "Hello, World!",
+  title: "Hello, World!",
   logoutUser: () => true,
 };
 
