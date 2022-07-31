@@ -19,13 +19,28 @@ const users = [
   },
 ];
 
+const props = {
+  users: users,
+  removeUser: () => true,
+  isAuthenticated: () => false,
+};
+
 it("renders a username", () => {
-  const { getByText } = render(<UsersList users={users} />);
+  const { getByText } = render(
+    <UsersList {...props} isAuthenticated={() => true} />
+  );
   expect(getByText("michael")).toHaveClass("username");
   expect(getByText("michaelherman")).toHaveClass("username");
 });
 
 it("renders", () => {
-  const { asFragment } = render(<UsersList users={users} />);
+  const { asFragment } = render(<UsersList {...props} />);
+  expect(asFragment()).toMatchSnapshot();
+});
+
+it("renders when authenticated", () => {
+  const { asFragment } = render(
+    <UsersList {...props} isAuthenticated={() => true} />
+  );
   expect(asFragment()).toMatchSnapshot();
 });

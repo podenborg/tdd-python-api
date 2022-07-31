@@ -1,30 +1,52 @@
 import axios from "axios";
+import Modal from "react-modal";
 import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import {
   AddUserFormData,
   LoginFormData,
-  LoginFormResponse,
   RegisterFormData,
   Tokens,
   User,
 } from "./types";
 import { About } from "./components/About";
 import { NavBar } from "./components/NavBar";
-import { AddUser } from "./components/AddUser";
 import { UsersList } from "./components/UsersList";
 import { RegisterForm } from "./components/RegisterForm";
 import { LoginForm } from "./components/LoginForm";
 import { UserStatus } from "./components/UserStatus";
 import { Message } from "./components/Message";
+import { AddUser } from "./components/AddUser";
+
+const modalStyles = {
+  content: {
+    top: "0",
+    left: "0",
+    right: "0",
+    bottom: "0",
+    border: 0,
+    background: "transparent",
+  },
+};
+
+Modal.setAppElement(document.getElementById("root")!);
 
 function App() {
   const [title] = useState("TestDriven.io");
   const [users, setUsers] = useState<User[]>([]);
+  const [showModal, setShowModal] = useState(false);
   const [messageType, setMessageType] = useState<string | null>(null);
   const [messageText, setMessageText] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  const handleOpenModal = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
 
   const createMessage = (type = "success", text = "Sanity Check") => {
     setMessageType(type);
@@ -56,11 +78,27 @@ function App() {
         data
       );
       console.log(res);
-      getUsers();
+      handleCloseModal();
       createMessage("success", "User added.");
+      getUsers();
     } catch (error) {
       console.log(error);
+      handleCloseModal();
       createMessage("success", "User added.");
+    }
+  };
+
+  const removeUser = async (userId: number) => {
+    try {
+      const res = await axios.delete(
+        `${process.env.REACT_APP_API_SERVICE_URL}/users/${userId}`
+      );
+      console.log(res);
+      createMessage("success", "User removed.");
+      getUsers();
+    } catch (error) {
+      console.log(error);
+      createMessage("danger", "Something went wrong.");
     }
   };
 
@@ -158,10 +196,39 @@ function App() {
                       <h1 className="title is-1">Users</h1>
                       <hr />
                       <br />
-                      <AddUser addUser={addUser} />
+                      {isAuthenticated() && (
+                        <button
+                          onClick={handleOpenModal}
+                          className="button is-primary"
+                        >
+                          Add User
+                        </button>
+                      )}
                       <br />
                       <br />
-                      <UsersList users={users} />
+                      <Modal isOpen={showModal} style={modalStyles}>
+                        <div className="modal is-active">
+                          <div className="modal-background" />
+                          <div className="modal-card">
+                            <header className="modal-card-head">
+                              <p className="modal-card-title">Add User</p>
+                              <button
+                                className="delete"
+                                aria-label="close"
+                                onClick={handleCloseModal}
+                              />
+                            </header>
+                            <section className="modal-card-body">
+                              <AddUser addUser={addUser} />
+                            </section>
+                          </div>
+                        </div>
+                      </Modal>
+                      <UsersList
+                        users={users}
+                        removeUser={removeUser}
+                        isAuthenticated={isAuthenticated}
+                      />
                     </div>
                   }
                 />
